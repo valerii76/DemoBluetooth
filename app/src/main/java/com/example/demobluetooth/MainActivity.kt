@@ -1,6 +1,7 @@
 package com.example.demobluetooth
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.media.*
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,8 +10,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.content.ContextCompat
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.util.jar.Manifest
 import kotlin.concurrent.thread
 
 
@@ -104,6 +107,7 @@ private class OutputDeviceListAdapter(val context: Context): BaseAdapter() {
 class MainActivity : AppCompatActivity() {
 
     private val TAG: String = "BluetoothDemo"
+    private val PERMISSION_REQUEST_CODE: Int = 123456789
 
     private lateinit var lstInput: ListView
     private lateinit var lstOutput: ListView
@@ -197,6 +201,15 @@ class MainActivity : AppCompatActivity() {
         inputAdapter.update()
         outputAdapter.update()
 
+        when (PackageManager.PERMISSION_GRANTED) {
+            ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECORD_AUDIO) -> {
+                // All ok...
+            }
+            else -> {
+                requestPermissions(arrayOf(android.Manifest.permission.RECORD_AUDIO), PERMISSION_REQUEST_CODE)
+            }
+        }
+
         // Create AudioRecorder
         val inputSampleRate = 8000
         audioRecorder = AudioRecord.Builder()
@@ -219,5 +232,24 @@ class MainActivity : AppCompatActivity() {
                 .build())
             .setBufferSizeInBytes(4 * AudioRecord.getMinBufferSize(outputSampleRate,AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT))
             .build()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        when (requestCode) {
+            PERMISSION_REQUEST_CODE -> {
+                if ((grantResults.isNotEmpty()) && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // All Ok...
+                } else {
+                    Toast.makeText(this, "Application must have RECORD_AUDIO permissions", Toast.LENGTH_LONG).show()
+                }
+            }
+            else -> {
+                // All other requests
+            }
+        }
     }
 }
