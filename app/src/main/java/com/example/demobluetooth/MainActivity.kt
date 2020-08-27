@@ -22,6 +22,37 @@ import java.io.ByteArrayOutputStream
 import java.util.jar.Manifest
 import kotlin.concurrent.thread
 
+class Utils {
+    companion object Constants {
+        val audioTypes: HashMap<Int, String> = hashMapOf(
+            AudioDeviceInfo.TYPE_AUX_LINE to "AUX",
+            AudioDeviceInfo.TYPE_BLUETOOTH_A2DP to "A2DP",
+            AudioDeviceInfo.TYPE_BLUETOOTH_SCO to "SCO",
+            AudioDeviceInfo.TYPE_BUILTIN_EARPIECE to  "EARPIECE",
+            AudioDeviceInfo.TYPE_BUILTIN_MIC to  "MIC",
+            AudioDeviceInfo.TYPE_BUILTIN_SPEAKER to "SPEAKER",
+            AudioDeviceInfo.TYPE_BUILTIN_SPEAKER_SAFE to "SPEAKER_SAFE",
+            AudioDeviceInfo.TYPE_BUS to "BUS",
+            AudioDeviceInfo.TYPE_DOCK to  "DOC",
+            AudioDeviceInfo.TYPE_FM_TUNER to "FM_TUNER",
+            AudioDeviceInfo.TYPE_HDMI to "HDMI",
+            AudioDeviceInfo.TYPE_HDMI_ARC to "HDMI_ARC",
+            AudioDeviceInfo.TYPE_HEARING_AID to "HEARING_AID",
+            AudioDeviceInfo.TYPE_IP to "IP",
+            AudioDeviceInfo.TYPE_LINE_ANALOG to "LINE_ANALOG",
+            AudioDeviceInfo.TYPE_LINE_DIGITAL to "LINE_DIGITAL",
+            AudioDeviceInfo.TYPE_TELEPHONY to "TELEPHONY",
+            AudioDeviceInfo.TYPE_TV_TUNER to "TV_TUNER",
+            AudioDeviceInfo.TYPE_UNKNOWN to "UNKNOWN",
+            AudioDeviceInfo.TYPE_USB_ACCESSORY to "USB_ACCESSORY",
+            AudioDeviceInfo.TYPE_USB_DEVICE to "USB_DEVICE",
+            AudioDeviceInfo.TYPE_USB_HEADSET to "USB_HEADSET",
+            AudioDeviceInfo.TYPE_WIRED_HEADPHONES to "WIRED_HEADPHONES",
+            AudioDeviceInfo.TYPE_WIRED_HEADSET to "WIRED_HEADSET"
+        )
+    }
+}
+
 
 private class InputDeviceListAdapter(val context: Context): BaseAdapter() {
 
@@ -58,7 +89,7 @@ private class InputDeviceListAdapter(val context: Context): BaseAdapter() {
         val description = rowView.findViewById<TextView>(R.id.lstInputDescription)
 
         val mic = getItem(index) as AudioDeviceInfo
-        type.text = mic.type.toString()
+        type.text = Utils.audioTypes[mic.type]
         id.text = mic.id.toString()
         address.text = mic.address
         description.text = mic.productName
@@ -101,7 +132,7 @@ private class OutputDeviceListAdapter(val context: Context): BaseAdapter() {
         val product = rowView.findViewById<TextView>(R.id.lstOutputProductName)
 
         val output = getItem(index) as AudioDeviceInfo
-        type.text = output.type.toString()
+        type.text = Utils.audioTypes[output.type]
         id.text = output.id.toString()
         address.text = output.address
         product.text = output.productName
