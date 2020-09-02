@@ -195,6 +195,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var audioPlayer: AudioTrack
     private var micRecord: ByteArrayOutputStream = ByteArrayOutputStream()
     private lateinit var headsetMonitor: BluetoothHeadsetStateMonitor
+    private var directRec: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -213,6 +214,9 @@ class MainActivity : AppCompatActivity() {
         val btnStart = findViewById<Button>(R.id.btnStartRecord)
         val btnStop = findViewById<Button>(R.id.btnStopRecord)
         val btnPlay = findViewById<Button>(R.id.btnPlayRecord)
+        val btnDirect = findViewById<CheckBox>(R.id.btnRecordDirect)
+        directRec = btnDirect.isChecked
+        btnDirect.setOnCheckedChangeListener { _, value -> directRec = value }
 
         lstInput.adapter = inputAdapter
         lstOutput.adapter = outputAdapter
@@ -249,14 +253,26 @@ class MainActivity : AppCompatActivity() {
             audioRecorder.startRecording()
             thread (start = true) {
                 var totalSize = 0
-                val bufferSize = 1024 * 16
+                val bufferSize = 4 * AudioRecord.getMinBufferSize(8000,AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_8BIT);
+                Log.e(TAG, "VVV: bufferSize: $bufferSize")
+//                val bufferSize = 1024 * 16
                 val buffer = ByteArray(bufferSize)
+
+                if (directRec) {
+                    audioPlayer.play()
+                }
+
                 while (audioRecorder.recordingState == AudioRecord.RECORDSTATE_RECORDING) {
                     val readCount = audioRecorder.read(buffer,0, bufferSize)
                     totalSize += readCount
                     micRecord.write(buffer, 0, readCount)
                     Log.d(TAG, "readCount: $readCount, totalSize: $totalSize")
+
+                    if (directRec && readCount > 0)
+                        audioPlayer.write(buffer, 0, readCount)
                 }
+                if (directRec)
+                    audioPlayer.stop();
             }
         } }
 

@@ -24,6 +24,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
+            <CheckBox
+                android:id="@+id/btnRecordDirect"
+                android:text="Direct"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
             <Button
                 android:id="@+id/btnStartRecord"
                 android:layout_weight="1"
